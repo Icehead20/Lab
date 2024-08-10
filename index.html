@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio - Brian Josue Gonzalez Segura</title>
+    <style>
+        body {
+            background-color: #F8E8E8;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        p {
+            text-align: center;
+            font-size: 1.2em;
+            color: #555;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFF;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #555;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        li {
+            background-color: #FAFAFA;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #DDD;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            width: 75%;
+            padding: 8px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #CCC;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #FF8888;
+            color: #FFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #FF6666;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFF0F0;
+            border: 1px solid #FFC0C0;
+            border-radius: 5px;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 10px;
+        }
+        .formula {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            background-color: #F8E8E8;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>Laboratorio - Brian Josue Gonzalez Segura</h1>
+    <p>En este laboratorio, se busca analizar dos parámetros críticos de salud: la glucosa y el colesterol. A través de la lista a continuación, los usuarios pueden ingresar datos de análisis de laboratorio, y luego calcular intervalos de confianza y realizar pruebas de hipótesis para entender mejor los resultados de los pacientes.</p>
+    <div class="container">
+        <h2>Lista de Glucosa</h2>
+        <ul id="glucosa-list">
+            <li>194</li>
+            <li>200</li>
+            <li>108</li>
+            <li>204</li>
+            <li>98</li>
+            <li>109</li>
+            <li>122</li>
+            <li>186</li>
+            <li>130</li>
+            <li>150</li>
+            <li>120</li>
+            <li>272</li>
+            <li>130</li>
+            <li>196</li>
+        </ul>
+        <div class="input-group">
+            <input type="number" id="glucosa-input" placeholder="Agregar valor de glucosa">
+            <button onclick="agregarElemento('glucosa-list', 'glucosa-input')">Agregar</button>
+        </div>
+        <h2>Lista de Colesterol</h2>
+        <ul id="colesterol-list">
+            <li>283</li>
+            <li>240</li>
+            <li>230</li>
+            <li>264</li>
+            <li>207</li>
+            <li>190</li>
+            <li>241</li>
+            <li>200</li>
+            <li>250</li>
+            <li>180</li>
+            <li>180</li>
+            <li>164</li>
+            <li>228</li>
+            <li>286</li>
+        </ul>
+        <div class="input-group">
+            <input type="number" id="colesterol-input" placeholder="Agregar valor de colesterol">
+            <button onclick="agregarElemento('colesterol-list', 'colesterol-input')">Agregar</button>
+        </div>
+        <h2>Problema 1: Intervalo de Confianza</h2>
+        <p class="description">Este botón calculará el intervalo de confianza al 95% para la diferencia de las medias entre glucosa y colesterol.</p>
+        <p class="formula">Fórmula: \(\left(\bar{X}_{glucosa} - \bar{X}_{colesterol}\right) \pm Z_{\alpha/2} \cdot \sqrt{\frac{\sigma_{glucosa}^2}{n_{glucosa}} + \frac{\sigma_{colesterol}^2}{n_{colesterol}}}\)</p>
+        <button onclick="calcularIntervalo()">Calcular Intervalo de Confianza</button>
+        <h2>Problema 2: Prueba de Hipótesis</h2>
+        <p class="description">Este botón realizará una prueba de hipótesis con un nivel de significancia del 5% para determinar si la mayoría de los pacientes tienen glucosa superior a 120.</p>
+        <p class="formula">Fórmula: \(\bar{X} > 120\) con \(H_0: \mu \leq 120\) y \(H_1: \mu > 120\)</p>
+        <button onclick="realizarPrueba()">Realizar Prueba de Hipótesis</button>
+        <div id="resultado" class="result">
+            <p>Resultado aparecerá aquí...</p>
+        </div>
+    </div>
+    <script>
+        function agregarElemento(listaId, inputId) {
+            var input = document.getElementById(inputId);
+            var lista = document.getElementById(listaId);
+            if (input.value !== "") {
+                var nuevoElemento = document.createElement("li");
+                nuevoElemento.textContent = input.value;
+                lista.appendChild(nuevoElemento);
+                input.value = "";
+            }
+        }
+        function calcularMedia(lista) {
+            var suma = lista.reduce((a, b) => a + b, 0);
+            return suma / lista.length;
+        }
+        function calcularDesviacion(lista, media) {
+            var suma = lista.reduce((a, b) => a + Math.pow(b - media, 2), 0);
+            return Math.sqrt(suma / (lista.length - 1));
+        }
+        function obtenerValoresDeLista(listaId) {
+            var lista = document.getElementById(listaId);
+            var elementos = lista.getElementsByTagName("li");
+            var valores = [];
+            for (var i = 0; i < elementos.length; i++) {
+                valores.push(parseInt(elementos[i].textContent));
+            }
+            return valores;
+        }
+        function calcularIntervalo() {
+            var glucosa = obtenerValoresDeLista("glucosa-list");
+            var colesterol = obtenerValoresDeLista("colesterol-list");
+            var mediaGlucosa = calcularMedia(glucosa);
+            var mediaColesterol = calcularMedia(colesterol);
+            var desvGlucosa = calcularDesviacion(glucosa, mediaGlucosa);
+            var desvColesterol = calcularDesviacion(colesterol, mediaColesterol);
+            var nGlucosa = glucosa.length;
+            var nColesterol = colesterol.length;
+            var Z = 1.96;
+            var margenError = Z * Math.sqrt((Math.pow(desvGlucosa, 2) / nGlucosa) + (Math.pow(desvColesterol, 2) / nColesterol));
+            var diferenciaMedias = mediaGlucosa - mediaColesterol;
+            var intervaloMin = diferenciaMedias - margenError;
+            var intervaloMax = diferenciaMedias + margenError;
+            document.getElementById("resultado").innerHTML = `<p>Intervalo de confianza al 95% para la diferencia de medias: (${intervaloMin.toFixed(2)}, ${intervaloMax.toFixed(2)})</p>`;
+        }
+        function realizarPrueba() {
+            var glucosa = obtenerValoresDeLista("glucosa-list");
+            var mediaGlucosa = calcularMedia(glucosa);
+            var Z = 1.645; // Valor crítico para un test unilateral con 5% de significancia
+            var nGlucosa = glucosa.length;
+            var desvGlucosa = calcularDesviacion(glucosa, mediaGlucosa);
+            var Zcalculado = (mediaGlucosa - 120) / (desvGlucosa / Math.sqrt(nGlucosa));
+            if (Zcalculado > Z) {
+                document.getElementById("resultado").innerHTML = `<p>La media de glucosa es significativamente mayor a 120 (Z = ${Zcalculado.toFixed(2)})</p>`;
+            } else {
+                document.getElementById("resultado").innerHTML = `<p>No hay suficiente evidencia para afirmar que la media de glucosa es mayor a 120 (Z = ${Zcalculado.toFixed(2)})</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
